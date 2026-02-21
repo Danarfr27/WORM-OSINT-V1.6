@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Navigation } from '@/components/Navigation';
 import { SettingsPanel } from '@/components/SettingsPanel';
+import { ChatBot } from '@/components/ChatBot';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { QuerySection } from '@/components/sections/QuerySection';
 import { ScanSection } from '@/components/sections/ScanSection';
@@ -12,6 +13,7 @@ import { RiskSection } from '@/components/sections/RiskSection';
 import { CTASection } from '@/components/sections/CTASection';
 import { SearchProvider, useSearch } from '@/context/SearchContext';
 import { SettingsProvider } from '@/context/SettingsContext';
+import { ChatProvider } from '@/context/ChatContext';
 import type { SearchResult } from '@/types';
 import './App.css';
 
@@ -193,6 +195,9 @@ function AppContent() {
       {/* Settings Panel */}
       <SettingsPanel />
 
+      {/* Chat Bot */}
+      <ChatBot />
+
       {/* Main Content */}
       <main ref={mainRef} className="relative">
         {/* Section 1: Hero Search */}
@@ -238,7 +243,9 @@ function App() {
   return (
     <SettingsProvider>
       <SearchProvider>
-        <AppContent />
+        <ChatProvider>
+          <AppContent />
+        </ChatProvider>
       </SearchProvider>
     </SettingsProvider>
   );

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Settings, Search, ScanLine, FileText, Menu, X } from 'lucide-react';
+import { Settings, Search, ScanLine, FileText, Menu, X, MessageSquare } from 'lucide-react';
 import { useSettings } from '@/context/SettingsContext';
+import { useChat } from '@/context/ChatContext';
 
 export function Navigation() {
   const { setIsSettingsOpen } = useSettings();
+  const { openChat } = useChat();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -66,8 +68,21 @@ export function Navigation() {
             ))}
           </div>
 
-          {/* Settings Button */}
+          {/* Right Actions */}
           <div className="flex items-center gap-2">
+            {/* Chat Button */}
+            <button
+              onClick={openChat}
+              className="flex items-center gap-2 px-4 py-2 text-sm text-worm-text-secondary hover:text-worm-accent transition-all rounded-lg hover:bg-worm-accent/5 border border-transparent hover:border-worm-accent/30 group"
+            >
+              <div className="relative">
+                <MessageSquare className="w-4 h-4" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-worm-accent rounded-full animate-pulse" />
+              </div>
+              <span className="hidden sm:inline font-mono uppercase tracking-wider">Chat</span>
+            </button>
+
+            {/* Settings Button */}
             <button
               onClick={() => setIsSettingsOpen(true)}
               className="flex items-center gap-2 px-4 py-2 text-sm text-worm-text-secondary hover:text-worm-accent transition-all rounded-lg hover:bg-worm-accent/5 border border-transparent hover:border-worm-accent/30"
@@ -101,6 +116,16 @@ export function Navigation() {
                 <span className="font-mono uppercase tracking-wider">{item.label}</span>
               </button>
             ))}
+            <button
+              onClick={() => {
+                openChat();
+                setIsMobileMenuOpen(false);
+              }}
+              className="flex items-center gap-3 w-full px-4 py-3 text-left text-worm-text-secondary hover:text-worm-accent hover:bg-worm-accent/5 rounded-lg transition-all"
+            >
+              <MessageSquare className="w-5 h-5" />
+              <span className="font-mono uppercase tracking-wider">Chat</span>
+            </button>
           </div>
         </div>
       )}
