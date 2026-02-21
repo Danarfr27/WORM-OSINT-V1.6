@@ -19,6 +19,7 @@ export interface SearchResult {
 export interface SearchQuery {
   query: string;
   timestamp: string;
+  result?: SearchResult;
   status: 'pending' | 'processing' | 'success' | 'error';
 }
 

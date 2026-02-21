@@ -6,8 +6,8 @@ interface SearchContextType {
   setQuery: (query: string) => void;
   isSearching: boolean;
   setIsSearching: (searching: boolean) => void;
-  searchStage: 'idle' | 'parsing' | 'scanning' | 'analyzing' | 'complete';
-  setSearchStage: (stage: 'idle' | 'parsing' | 'scanning' | 'analyzing' | 'complete') => void;
+  searchStage: 'idle' | 'parsing' | 'scanning' | 'analyzing' | 'complete' | 'error';
+  setSearchStage: (stage: 'idle' | 'parsing' | 'scanning' | 'analyzing' | 'complete' | 'error') => void;
   result: SearchResult | null;
   setResult: (result: SearchResult | null) => void;
   searchHistory: SearchQuery[];
@@ -22,7 +22,7 @@ const SearchContext = createContext<SearchContextType | undefined>(undefined);
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [searchStage, setSearchStage] = useState<'idle' | 'parsing' | 'scanning' | 'analyzing' | 'complete'>('idle');
+  const [searchStage, setSearchStage] = useState<'idle' | 'parsing' | 'scanning' | 'analyzing' | 'complete' | 'error'>('idle');
   const [result, setResult] = useState<SearchResult | null>(null);
   const [searchHistory, setSearchHistory] = useState<SearchQuery[]>([]);
   const [scanProgress, setScanProgress] = useState(0);

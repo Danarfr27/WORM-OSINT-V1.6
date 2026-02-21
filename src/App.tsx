@@ -19,28 +19,20 @@ import './App.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Mock search function - replace with actual API call
-const mockSearch = async (query: string): Promise<SearchResult> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
+// Fungsi untuk memanggil API chat
+const callChatApi = async (query: string): Promise<SearchResult> => {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: query }),
+  });
 
-  return {
-    name: query,
-    aliases: [`${query}_alt`, `${query}_01`, 'known_alias'],
-    possible_locations: ['Jakarta, Indonesia', 'Singapore', 'Kuala Lumpur, Malaysia'],
-    associated_emails: [`${query.toLowerCase().replace(/\s/g, '.')}@email.com`, 'contact@example.com'],
-    social_media_profiles: {
-      linkedin: `https://linkedin.com/in/${query.toLowerCase().replace(/\s/g, '-')}`,
-      twitter: `https://twitter.com/${query.toLowerCase().replace(/\s/g, '')}`,
-      facebook: `https://facebook.com/${query.toLowerCase().replace(/\s/g, '.')}`,
-    },
-    additional_data_sources: [
-      { source: 'Public Records Database', info: 'Identity verified with government records' },
-      { source: 'Social Graph Analysis', info: '3 connected profiles found across platforms' },
-      { source: 'Corporate Registry', info: 'Associated with 2 registered companies' },
-    ],
-    risk_level: Math.random() > 0.7 ? 'medium' : 'low',
-  };
+  if (!response.ok) {
+    throw new Error('Failed to fetch data from API');
+  }
+
+  const data = await response.json();
+  return data;
 };
 
 function AppContent() {
@@ -83,23 +75,26 @@ function AppContent() {
 
     // Perform search
     try {
-      const result = await mockSearch(searchQuery);
-      
+      const result = await callChatApi(searchQuery);
+
       clearInterval(progressInterval);
       setScanProgress(100);
-      
+
       await new Promise(resolve => setTimeout(resolve, 500));
       setSearchStage('analyzing');
-      
+
       await new Promise(resolve => setTimeout(resolve, 600));
       setResult(result);
       setSearchStage('complete');
-      
+
       addToHistory({
         query: searchQuery,
         timestamp: new Date().toISOString(),
+        result,
         status: 'success',
       });
+
+      setSearchStage('error' as 'idle' | 'parsing' | 'scanning' | 'analyzing' | 'complete' | 'error');
 
       // Scroll to results
       setTimeout(() => {
@@ -109,16 +104,12 @@ function AppContent() {
         }
       }, 500);
     } catch (error) {
-      console.error('Search failed:', error);
-      addToHistory({
-        query: searchQuery,
-        timestamp: new Date().toISOString(),
-        status: 'error',
-      });
+      console.error('Error during search:', error);
+      setSearchStage('error');
     } finally {
       setIsSearching(false);
     }
-  }, [setIsSearching, setSearchStage, setResult, addToHistory, setScanProgress]);
+  }, [setIsSearching, setSearchStage, setScanProgress, setResult, addToHistory]);
 
   // Handle new search from CTA
   const handleNewSearch = useCallback(() => {
